@@ -13,9 +13,6 @@ O projeto aplica arquitetura em camadas, validação e normalização de dados c
 ![ZOD](https://img.shields.io/badge/Zod-000000?style=for-the-badge&logo=zod&logoColor=3E67B1)
 ![VITEST](https://img.shields.io/badge/Vitest-000000?style=for-the-badge&logo=vitest&logoColor=6E9F18)
 ![POSTMAN](https://img.shields.io/badge/Postman-000000?style=for-the-badge&logo=postman&logoColor=FF6C37)
-![GIT](https://img.shields.io/badge/Git-000000?style=for-the-badge&logo=git&logoColor=F05032)
-![GITHUB](https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white)
-![VSCODE](https://img.shields.io/badge/VS_Code-000000?style=for-the-badge&logo=visualstudiocode&logoColor=007ACC)
 
 ## Funcionalidades
 
