@@ -11,6 +11,8 @@ function tratarErros(erro, request, response, next) {
         })
     }
 
+    console.error("Erro não tratado:", erro)
+
     return response.status(500).json({
         sucesso: false,
         tipoErro: "ERRO_INTERNO",
