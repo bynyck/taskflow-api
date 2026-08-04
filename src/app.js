@@ -1,5 +1,6 @@
 import express from "express";
 import { tarefasRouter } from "./routes/tarefasRoutes.js";
+import { projetosRouter } from "./routes/projetosRoutes.js";
 import { registrarRequisicao } from "./middlewares/registrarRequisicao.js";
 import { rotaNaoEncontrada } from "./middlewares/rotaNaoEncontrada.js";
 import { tratarErros } from "./middlewares/tratarErros.js";
@@ -15,6 +16,8 @@ app.get("/", (req,res) => {
 })
 
 app.use("/tarefas", tarefasRouter);
+
+app.use("/projetos", projetosRouter);
 
 app.use(rotaNaoEncontrada);
 

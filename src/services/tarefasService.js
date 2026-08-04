@@ -1,5 +1,6 @@
 import { listarTarefasRepository, buscarTarefaPorIdRepository, cadastrarTarefaRepository, concluirTarefaRepository, deletarTarefaRepository, reabrirTarefaRepository, atualizarTarefaRepository } from "../repositories/tarefasRepository.js";
 import { ErroAplicacao } from "../errors/ErroAplicacao.js";
+import { buscarProjetoPorIdRepository } from "../repositories/projetosRepository.js";
 
 async function listarTarefasService() {
     const tarefas = await listarTarefasRepository();
@@ -38,13 +39,24 @@ async function buscarTarefaPorIdService(id) {
 }
 
 async function cadastrarTarefaService(dados) {
+    const { projetoId } = dados;
+
+    if(projetoId !== undefined) {
+        const projeto = await buscarProjetoPorIdRepository(projetoId);
+
+        if(!projeto) {
+            throw new ErroAplicacao("Projeto não encontrado","PROJETO_NAO_ENCONTRADO",404);
+        }
+    }
 
     const tarefa = await cadastrarTarefaRepository(dados);
+
+    const tarefaEncontrada = await buscarTarefaPorIdRepository(tarefa.id)
 
     return {
         sucesso: true,
         mensagem: "Tarefa criada com sucesso",
-        tarefa
+        tarefa: tarefaEncontrada
     }
 
 }
@@ -54,16 +66,28 @@ async function atualizarTarefaService(id, dados) {
         throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
     }
 
+    const {projetoId} = dados;
+
+    if(typeof projetoId === "number") {
+        const projeto = await buscarProjetoPorIdRepository(projetoId);
+
+        if(!projeto){
+            throw new ErroAplicacao("Projeto não encontrado","PROJETO_NAO_ENCONTRADO",404);
+        }
+    }
+
     const tarefa = await atualizarTarefaRepository(id, dados);
 
     if(!tarefa) {
         throw new ErroAplicacao("Tarefa não encontrada", "TAREFA_NAO_ENCONTRADA",404);
     }
 
+    const tarefaEncontrada = await buscarTarefaPorIdRepository(tarefa.id);
+
     return {
         sucesso: true,
         mensagem: "Tarefa atualizada com sucesso",
-        tarefa
+        tarefa: tarefaEncontrada
     }
 }
 

@@ -68,6 +68,18 @@ describe("cadastrarTarefaSchema", () => {
             expect(erro.message).toBe("Titulo é obrigatório");
         }
     });
+
+    test("deve aceitar uma tarefa válida contendo projetoId", () => {
+        const dados = {
+            titulo: "Aprender notion",
+            prioridade: "alta",
+            projetoId: 1
+        }
+
+        const resultado = cadastrarTarefaSchema.safeParse(dados);
+
+        expect(resultado.success).toBe(true);
+    })
 })
 
 describe("atualizarTarefaSchema", () => {
