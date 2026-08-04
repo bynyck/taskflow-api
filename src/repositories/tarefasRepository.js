@@ -2,15 +2,19 @@ import { pool } from "../database/conexao.js";
 
 async function listarTarefasRepository() {
   const resultado = await pool.query(`
-    SELECT
-      id,
-      titulo,
-      descricao,
-      prioridade,
-      concluida,
-      criado_em AS "criadoEm"
-    FROM tarefas
-    ORDER BY criado_em DESC;
+      SELECT 
+        t.id,
+        t.titulo,
+        t.descricao,
+        t.prioridade,
+        t.concluida,
+        t.criado_em AS "criadoEm",
+        t.projeto_id AS "projetoId",
+        p.nome AS "projetoNome"
+        FROM tarefas AS t
+        LEFT JOIN projetos AS p
+        ON t.projeto_id = p.id
+        ORDER BY t.criado_em DESC;
     `)
 
     return resultado.rows;
@@ -19,14 +23,18 @@ async function listarTarefasRepository() {
 async function buscarTarefaPorIdRepository(id) {
     const resultado = await pool.query(`
       SELECT
-        id,
-        titulo,
-        descricao,
-        prioridade,
-        concluida,
-        criado_em AS "criadoEm"
-      FROM tarefas
-      WHERE id = $1
+        t.id,
+        t.titulo,
+        t.descricao,
+        t.prioridade,
+        t.concluida,
+        t.criado_em AS "criadoEm",
+        t.projeto_id AS "projetoId",
+        p.nome AS "projetoNome"
+      FROM tarefas AS t
+      LEFT JOIN projetos AS p
+      ON t.projeto_id = p.id
+      WHERE t.id = $1;
       `, [id]);
 
     return resultado.rows[0];
@@ -34,16 +42,17 @@ async function buscarTarefaPorIdRepository(id) {
 
 async function cadastrarTarefaRepository(dados) {
 
-  const { titulo, descricao = null, prioridade } = dados;
+  const { titulo, descricao = null, prioridade, projetoId = null } = dados;
 
-  const resultado = await pool.query(`INSERT INTO tarefas (titulo, descricao, prioridade) VALUES ($1, $2, $3) RETURNING
+  const resultado = await pool.query(`INSERT INTO tarefas (titulo, descricao, prioridade, projeto_id) VALUES ($1, $2, $3, $4) RETURNING
     id,
     titulo,
     descricao,
     prioridade,
     concluida,
-    criado_em AS "criadoEm"
-    `,[titulo,descricao,prioridade]);
+    criado_em AS "criadoEm",
+    projeto_id AS "projetoId"
+    `,[titulo,descricao,prioridade,projetoId]);
 
   return resultado.rows[0];
 
@@ -53,7 +62,7 @@ async function atualizarTarefaRepository(id, dados) {
     const campos = [];
     const valores = [];
 
-    const { titulo, descricao, prioridade } = dados;
+    const { titulo, descricao, prioridade, projetoId } = dados;
 
     if (titulo !== undefined) {
       valores.push(titulo);
@@ -68,6 +77,11 @@ async function atualizarTarefaRepository(id, dados) {
     if (prioridade !== undefined) {
       valores.push(prioridade);
       campos.push(`prioridade = $${valores.length}`);
+    }
+
+    if(projetoId !== undefined) {
+      valores.push(projetoId);
+      campos.push(`projeto_id = $${valores.length}`);
     }
 
     valores.push(id);
@@ -85,7 +99,8 @@ async function atualizarTarefaRepository(id, dados) {
       descricao,
       prioridade,
       concluida,
-      criado_em AS "criadoEm";
+      criado_em AS "criadoEm",
+      projeto_id AS "projetoId";
     `
 
     const resultado = await pool.query(sql, valores);

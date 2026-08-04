@@ -8,12 +8,15 @@ const cadastrarTarefaSchema = z.strictObject({
       : "Prioridade deve ser texto"
     }).trim().toLowerCase().pipe(z.enum(["baixa", "media", "alta"]), {
         error: "Prioridade inválida"
-    })
+    }),
+    projetoId: z.number().int("O projetoId deve ser um número inteiro").positive("O projetoId deve ser maior que zero").optional()
 });
 
-const atualizarTarefaSchema = cadastrarTarefaSchema.partial().refine(dados => Object.keys(dados).length > 0, {
+const atualizarTarefaSchema = cadastrarTarefaSchema.extend({
+    projetoId: z.number().int("O projetoId deve ser um numero inteiro").positive("O projetoId deve ser maior que zero").nullable()
+}).partial().refine(dados => Object.keys(dados).length > 0, {
     error: "Envie pelo menos um campo para atualizar"
-});
+})
 
 
 export { cadastrarTarefaSchema, atualizarTarefaSchema };
