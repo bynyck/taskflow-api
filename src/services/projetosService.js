@@ -1,5 +1,6 @@
 import { ErroAplicacao } from "../errors/ErroAplicacao.js";
 import { listarProjetosRepository, buscarProjetoPorIdRepository, cadastrarProjetoRepository , atualizarProjetoRepository, deletarProjetoRepository } from "../repositories/projetosRepository.js";
+import { listarTarefasPorProjetoIdRepository } from "../repositories/tarefasRepository.js";
 
 async function listarProjetosService() {
     const projetos = await listarProjetosRepository();
@@ -34,6 +35,27 @@ async function buscarProjetoPorIdService(id) {
         sucesso: true,
         mensagem: "Projeto encontrado com sucesso",
         projeto
+    }
+}
+
+async function listarTarefasPorProjetoService(id) {
+    if(!Number.isInteger(id) || id <= 0) {
+        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS",400)
+    }
+
+    const projeto = await buscarProjetoPorIdRepository(id);
+
+    if(!projeto) {
+        throw new ErroAplicacao("Projeto não encontrado", "PROJETO_NAO_ENCONTRADO",404);
+    }
+
+    const tarefas = await listarTarefasPorProjetoIdRepository(id);
+
+    return {
+        sucesso: true,
+        mensagem: "Tarefas do projeto encontradas com sucesso",
+        projeto,
+        tarefas
     }
 }
 
@@ -86,4 +108,4 @@ async function deletarProjetoService(id) {
     }
 }
 
-export { listarProjetosService, buscarProjetoPorIdService, cadastrarProjetoService, atualizarProjetoService, deletarProjetoService };
+export { listarProjetosService, buscarProjetoPorIdService, listarTarefasPorProjetoService, cadastrarProjetoService, atualizarProjetoService, deletarProjetoService };
