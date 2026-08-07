@@ -1,8 +1,8 @@
 import { ErroAplicacao } from "../errors/ErroAplicacao.js";
 
-function validarRequisicao(schema) {
+function validarRequisicao(schema, origem = "body") {
   return (request, response, next) => {
-    const resultado = schema.safeParse(request.body);
+    const resultado = schema.safeParse(request[origem]);
 
     if (!resultado.success) {
       const errosFormatados = resultado.error.issues.map((erro) => {
@@ -22,7 +22,11 @@ function validarRequisicao(schema) {
       return next(erroValidacao);
     }
 
-    request.body = resultado.data;
+    if (origem === "body") {
+      request.body = resultado.data;
+    }else{
+      request.dadosValidados = resultado.data;
+    }
 
     next();
   };

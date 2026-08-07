@@ -1,7 +1,9 @@
 import { pool } from "../database/conexao.js";
 
-async function listarTarefasRepository() {
-  const resultado = await pool.query(`
+async function listarTarefasRepository(filtros) {
+  const {concluida, prioridade} = filtros;
+
+  let sql = `
       SELECT 
         t.id,
         t.titulo,
@@ -14,10 +16,30 @@ async function listarTarefasRepository() {
         FROM tarefas AS t
         LEFT JOIN projetos AS p
         ON t.projeto_id = p.id
-        ORDER BY t.criado_em DESC;
-    `)
+    `;
 
-    return resultado.rows;
+  const condicoes = [];
+  const valores = [];
+
+  if(concluida !== undefined) {
+    valores.push(concluida);
+    condicoes.push(`t.concluida = $${valores.length}`);
+  }
+
+  if(prioridade !== undefined) {
+    valores.push(prioridade);
+    condicoes.push(`t.prioridade = $${valores.length}`);
+  }
+
+  if(condicoes.length > 0) {
+    sql += `WHERE ${condicoes.join(" AND ")}`;
+  }
+
+  sql += ` ORDER BY t.criado_em DESC`;
+
+  const resultado = await pool.query(sql,valores);
+
+  return resultado.rows;
 }
 
 async function buscarTarefaPorIdRepository(id) {
