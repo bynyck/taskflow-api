@@ -40,6 +40,23 @@ async function buscarTarefaPorIdRepository(id) {
     return resultado.rows[0];
 }
 
+async function listarTarefasPorProjetoIdRepository(projetoId) {
+  const resultado = await pool.query(`
+        SELECT
+          id,
+          titulo,
+          descricao,
+          prioridade,
+          concluida,
+          criado_em AS "criadoEm"
+        FROM tarefas
+        WHERE projeto_id = $1
+        ORDER BY criado_em DESC
+    `, [projetoId]);
+  
+  return resultado.rows;
+}
+
 async function cadastrarTarefaRepository(dados) {
 
   const { titulo, descricao = null, prioridade, projetoId = null } = dados;
@@ -144,4 +161,4 @@ async function deletarTarefaRepository(id) {
 
     return resultado.rows[0];
 }
-export { listarTarefasRepository, buscarTarefaPorIdRepository, cadastrarTarefaRepository, atualizarTarefaRepository,concluirTarefaRepository, reabrirTarefaRepository, deletarTarefaRepository };
+export { listarTarefasRepository, buscarTarefaPorIdRepository, listarTarefasPorProjetoIdRepository, cadastrarTarefaRepository, atualizarTarefaRepository,concluirTarefaRepository, reabrirTarefaRepository, deletarTarefaRepository };

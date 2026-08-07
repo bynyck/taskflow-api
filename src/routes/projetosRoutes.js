@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listarProjetosController, buscarProjetoPorIdController, cadastrarProjetoController, atualizarProjetoController, deletarProjetoController } from "../controllers/projetosController.js";
+import { listarProjetosController, buscarProjetoPorIdController, listarTarefasPorProjetoController, cadastrarProjetoController, atualizarProjetoController, deletarProjetoController } from "../controllers/projetosController.js";
 import { validarRequisicao } from "../middlewares/validarRequisicao.js";
 import { atualizarProjetoSchema, cadastrarProjetoSchema } from "../schemas/projetosSchemas.js";
 
@@ -8,6 +8,8 @@ const projetosRouter = Router();
 projetosRouter.get("/", listarProjetosController);
 
 projetosRouter.get("/:id", buscarProjetoPorIdController);
+
+projetosRouter.get("/:id/tarefas", listarTarefasPorProjetoController);
 
 projetosRouter.post("/", validarRequisicao(cadastrarProjetoSchema), cadastrarProjetoController);
 

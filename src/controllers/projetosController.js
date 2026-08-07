@@ -1,4 +1,4 @@
-import { listarProjetosService, buscarProjetoPorIdService, cadastrarProjetoService, atualizarProjetoService, deletarProjetoService } from "../services/projetosService.js"
+import { listarProjetosService, buscarProjetoPorIdService, listarTarefasPorProjetoService, cadastrarProjetoService, atualizarProjetoService, deletarProjetoService } from "../services/projetosService.js"
 
 async function listarProjetosController(req,res) {
 
@@ -11,6 +11,14 @@ async function buscarProjetoPorIdController(req,res) {
     const id = Number(req.params.id);
     
     const resposta = await buscarProjetoPorIdService(id);
+
+    return res.status(200).json(resposta);
+}
+
+async function listarTarefasPorProjetoController(req,res) {
+    const id = Number(req.params.id);
+
+    const resposta = await listarTarefasPorProjetoService(id);
 
     return res.status(200).json(resposta);
 }
@@ -41,4 +49,4 @@ async function deletarProjetoController(req,res) {
     return res.status(200).json(resposta);
 }
 
-export { listarProjetosController, buscarProjetoPorIdController, cadastrarProjetoController, atualizarProjetoController, deletarProjetoController };
+export { listarProjetosController, buscarProjetoPorIdController, listarTarefasPorProjetoController, cadastrarProjetoController, atualizarProjetoController, deletarProjetoController };
