@@ -18,5 +18,13 @@ const atualizarTarefaSchema = cadastrarTarefaSchema.extend({
     error: "Envie pelo menos um campo para atualizar"
 })
 
+const listarTarefasQuerySchema = z.strictObject({
+    concluida: z.enum(["true","false"]).transform(valor => {
+        return valor === "true";
+    }).optional(),
+    prioridade: z.enum(["baixa","media","alta"]).optional()
+})
 
-export { cadastrarTarefaSchema, atualizarTarefaSchema };
+
+export { cadastrarTarefaSchema, atualizarTarefaSchema, listarTarefasQuerySchema };
+ 

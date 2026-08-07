@@ -2,13 +2,14 @@ import { listarTarefasRepository, buscarTarefaPorIdRepository, cadastrarTarefaRe
 import { ErroAplicacao } from "../errors/ErroAplicacao.js";
 import { buscarProjetoPorIdRepository } from "../repositories/projetosRepository.js";
 
-async function listarTarefasService() {
-    const tarefas = await listarTarefasRepository();
+async function listarTarefasService(filtros) {
+
+    const tarefas = await listarTarefasRepository(filtros);
 
     if(tarefas.length === 0) {
         return {
             sucesso: true,
-            mensagem: "Nenhuma tarefa cadastrada",
+            mensagem: "Nenhuma tarefa encontrada",
             tarefas
         }
     }

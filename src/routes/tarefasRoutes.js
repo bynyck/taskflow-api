@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { validarRequisicao } from "../middlewares/validarRequisicao.js";
-import { cadastrarTarefaSchema, atualizarTarefaSchema } from "../schemas/tarefasSchemas.js";
+import { cadastrarTarefaSchema, atualizarTarefaSchema, listarTarefasQuerySchema } from "../schemas/tarefasSchemas.js";
 
 import { listarTarefasController, buscarTarefaPorIdController, cadastrarTarefaController, atualizarTarefaController, concluirTarefaController, reabrirTarefaController, deletarTarefaController } from "../controllers/tarefasController.js";
 
 const tarefasRouter = Router();
 
-tarefasRouter.get("/", listarTarefasController);
+tarefasRouter.get("/", validarRequisicao(listarTarefasQuerySchema, "query"),listarTarefasController);
 
 tarefasRouter.get("/:id", buscarTarefaPorIdController);
 

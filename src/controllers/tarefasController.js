@@ -1,8 +1,10 @@
 import { listarTarefasService, buscarTarefaPorIdService, cadastrarTarefaService, atualizarTarefaService, concluirTarefaService, reabrirTarefaService, deletarTarefaService } from "../services/tarefasService.js";
 
 async function listarTarefasController(req, res) {
+    
+    const filtros = req.dadosValidados;
 
-    const resposta = await listarTarefasService();
+    const resposta = await listarTarefasService(filtros);
 
     return res.status(200).json(resposta);
 } 
