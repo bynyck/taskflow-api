@@ -33,6 +33,14 @@ describe("CadastrarProjetoSchame", () => {
 
         expect(resultado.success).toBe(true)
     })
+
+    test("deve rejeitar cadastro sem dados", () => {
+        const dados = {};
+
+        const resultado = cadastrarProjetoSchema.safeParse(dados);
+
+        expect(resultado.success).toBe(false)
+    })
 })
 
 describe("atualizarProjetoSchema", () => {
