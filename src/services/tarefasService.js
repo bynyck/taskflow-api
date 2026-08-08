@@ -43,9 +43,6 @@ async function listarTarefasService(filtros) {
 }
 
 async function buscarTarefaPorIdService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const tarefa = await buscarTarefaPorIdRepository(id);
 
@@ -84,9 +81,6 @@ async function cadastrarTarefaService(dados) {
 }
 
 async function atualizarTarefaService(id, dados) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const {projetoId} = dados;
 
@@ -114,9 +108,6 @@ async function atualizarTarefaService(id, dados) {
 }
 
 async function concluirTarefaService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const tarefa = await buscarTarefaPorIdRepository(id);
 
@@ -139,9 +130,6 @@ async function concluirTarefaService(id) {
 }
 
 async function reabrirTarefaService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const tarefa = await buscarTarefaPorIdRepository(id);
 
@@ -164,9 +152,6 @@ async function reabrirTarefaService(id) {
 }
 
 async function deletarTarefaService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const tarefaDeletada = await deletarTarefaRepository(id);
 

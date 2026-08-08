@@ -10,7 +10,7 @@ async function listarTarefasController(req, res) {
 } 
 
 async function buscarTarefaPorIdController(req, res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const resposta = await buscarTarefaPorIdService(id);
 
@@ -26,7 +26,7 @@ async function cadastrarTarefaController(req, res) {
 }
 
 async function atualizarTarefaController(req, res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
     const dados = req.body;
 
     const resposta = await atualizarTarefaService(id, dados);
@@ -35,7 +35,7 @@ async function atualizarTarefaController(req, res) {
 }
 
 async function concluirTarefaController(req, res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
     
     const resposta = await concluirTarefaService(id);
 
@@ -43,7 +43,7 @@ async function concluirTarefaController(req, res) {
 }
 
 async function reabrirTarefaController(req, res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const resposta = await reabrirTarefaService(id);
 
@@ -51,7 +51,7 @@ async function reabrirTarefaController(req, res) {
 }
 
 async function deletarTarefaController(req, res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const resposta = await deletarTarefaService(id);
 

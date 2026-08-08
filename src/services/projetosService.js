@@ -21,9 +21,6 @@ async function listarProjetosService() {
 }
 
 async function buscarProjetoPorIdService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS",400);
-    }
 
     const projeto = await buscarProjetoPorIdRepository(id);
 
@@ -39,9 +36,6 @@ async function buscarProjetoPorIdService(id) {
 }
 
 async function listarTarefasPorProjetoService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS",400)
-    }
 
     const projeto = await buscarProjetoPorIdRepository(id);
 
@@ -71,9 +65,6 @@ async function cadastrarProjetoService(dados){
 }
 
 async function atualizarProjetoService(id, dados){
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS", 400);
-    }
 
     const projetoEncontrado = await buscarProjetoPorIdRepository(id);
 
@@ -91,9 +82,6 @@ async function atualizarProjetoService(id, dados){
 }
 
 async function deletarProjetoService(id) {
-    if(!Number.isInteger(id) || id <= 0) {
-        throw new ErroAplicacao("Id inválido", "DADOS_INVALIDOS",400);
-    }
 
     const projeto = await deletarProjetoRepository(id);
 

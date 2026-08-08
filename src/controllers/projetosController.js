@@ -8,7 +8,7 @@ async function listarProjetosController(req,res) {
 }
 
 async function buscarProjetoPorIdController(req,res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
     
     const resposta = await buscarProjetoPorIdService(id);
 
@@ -16,7 +16,7 @@ async function buscarProjetoPorIdController(req,res) {
 }
 
 async function listarTarefasPorProjetoController(req,res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const resposta = await listarTarefasPorProjetoService(id);
 
@@ -32,7 +32,7 @@ async function cadastrarProjetoController(req,res) {
 }
 
 async function atualizarProjetoController(req,res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const dados = req.body;
 
@@ -42,7 +42,7 @@ async function atualizarProjetoController(req,res) {
 }
 
 async function deletarProjetoController(req,res) {
-    const id = Number(req.params.id);
+    const { id } = req.dadosValidados;
 
     const resposta = await deletarProjetoService(id);
 
