@@ -22,7 +22,9 @@ const listarTarefasQuerySchema = z.strictObject({
     concluida: z.enum(["true","false"]).transform(valor => {
         return valor === "true";
     }).optional(),
-    prioridade: z.enum(["baixa","media","alta"]).optional()
+    prioridade: z.enum(["baixa","media","alta"]).optional(),
+    pagina: z.coerce.number().int("A página deve ser um número inteiro").positive("A página deve ser maior que zero").default(1),
+    limite: z.coerce.number().int("O limite deve ser um número inteiro").positive("O limite deve ser maior que zero").default(10)
 })
 
 
