@@ -1,15 +1,32 @@
-import { listarTarefasRepository, buscarTarefaPorIdRepository, cadastrarTarefaRepository, concluirTarefaRepository, deletarTarefaRepository, reabrirTarefaRepository, atualizarTarefaRepository } from "../repositories/tarefasRepository.js";
+import { listarTarefasRepository, contarTarefasRepository, buscarTarefaPorIdRepository, cadastrarTarefaRepository, concluirTarefaRepository, deletarTarefaRepository, reabrirTarefaRepository, atualizarTarefaRepository } from "../repositories/tarefasRepository.js";
 import { ErroAplicacao } from "../errors/ErroAplicacao.js";
 import { buscarProjetoPorIdRepository } from "../repositories/projetosRepository.js";
 
 async function listarTarefasService(filtros) {
 
-    const tarefas = await listarTarefasRepository(filtros);
+    const { pagina, limite } = filtros;
+
+    const offset = (pagina - 1) * limite;
+
+    const filtrosPaginados = {
+        ...filtros,
+        offset
+    };
+
+    const tarefas = await listarTarefasRepository(filtrosPaginados);
+
+    const total = await contarTarefasRepository(filtros);
+
+    const totalPaginas = Math.ceil(total / limite);
 
     if(tarefas.length === 0) {
         return {
             sucesso: true,
             mensagem: "Nenhuma tarefa encontrada",
+            pagina,
+            limite,
+            total,
+            totalPaginas,
             tarefas
         }
     }
@@ -17,6 +34,10 @@ async function listarTarefasService(filtros) {
     return {
         sucesso: true,
         mensagem: "Tarefas encontradas com sucesso",
+        pagina,
+        limite,
+        total,
+        totalPaginas,
         tarefas
     }
 }
