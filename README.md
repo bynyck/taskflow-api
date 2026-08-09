@@ -765,9 +765,15 @@ Algumas decisões adotadas no projeto:
 
 ## Deploy
 
-O deploy da API e do banco de dados será realizado na próxima etapa do projeto.
+A API está publicada no Render e utiliza PostgreSQL hospedado no Neon.
 
-Após a publicação, esta seção será atualizada com a URL pública da API e as informações necessárias para utilizá-la em ambiente de produção.
+### API em produção
+
+**Base URL:**
+
+```text
+https://taskflow-api-j3lv.onrender.com
+````
 
 ## Status do projeto
 
@@ -785,7 +791,7 @@ A versão atual possui:
 - tratamento centralizado de erros
 - testes automatizados
 
-A próxima etapa é a publicação da aplicação em ambiente de produção.
+A API está publicada em ambiente de produção utilizando Render e PostgreSQL hospedado no Neon.
 
 ## Autor
 
