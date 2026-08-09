@@ -1,8 +1,10 @@
 # TaskFlow API
 
-API REST para gerenciamento de tarefas, desenvolvida com Node.js, Express, JavaScript e PostgreSQL.
+API REST para gerenciamento de tarefas e projetos, desenvolvida com Node.js, Express, JavaScript e PostgreSQL.
 
-O projeto aplica arquitetura em camadas, validação e normalização de dados com Zod, persistência em banco de dados, consultas SQL parametrizadas, tratamento centralizado de erros e boas práticas de versionamento com Git e GitHub.
+A TaskFlow permite criar e organizar tarefas, agrupá-las em projetos, controlar prioridade e estado, aplicar filtros, navegar pelos resultados com paginação e manter regras de negócio consistentes.
+
+O projeto utiliza arquitetura em camadas, validação e normalização de dados com Zod, consultas SQL parametrizadas, tratamento centralizado de erros e testes automatizados com Vitest.
 
 ## Tecnologias e ferramentas
 
@@ -16,49 +18,100 @@ O projeto aplica arquitetura em camadas, validação e normalização de dados c
 
 ## Funcionalidades
 
-- Listar todas as tarefas
-- Buscar uma tarefa por ID
-- Cadastrar uma nova tarefa
-- Atualizar parcialmente uma tarefa
-- Marcar uma tarefa como concluída
-- Reabrir uma tarefa concluída
-- Excluir uma tarefa
-- Validar e normalizar os dados recebidos
-- Gerar ID, status e data de criação automaticamente
-- Persistir os dados no PostgreSQL
-- Executar consultas SQL parametrizadas
-- Proteger a aplicação contra SQL Injection
+- Criar, listar, buscar, atualizar e excluir tarefas
+- Marcar tarefas como concluídas
+- Reabrir tarefas concluídas
+- Criar, listar, buscar, atualizar e excluir projetos
+- Vincular tarefas a projetos
+- Alterar o projeto associado a uma tarefa
+- Remover o vínculo entre tarefa e projeto
+- Listar as tarefas pertencentes a um projeto
+- Filtrar tarefas por prioridade
+- Filtrar tarefas por estado de conclusão
+- Combinar filtros na listagem
+- Paginar a listagem de tarefas
+- Limitar a quantidade máxima de registros por página
+- Validar `body`, `params` e `query params` com Zod
+- Normalizar dados antes de entrarem na aplicação
 - Tratar erros de forma centralizada
 - Retornar status HTTP adequados
-- Registrar as requisições recebidas
-- Testar os schemas de validação automaticamente
+- Executar consultas SQL parametrizadas
+- Preservar tarefas quando um projeto é excluído
+- Executar testes automatizados dos principais contratos de validação
 
 ## Arquitetura
 
-O projeto está organizado em camadas:
+A aplicação utiliza uma arquitetura em camadas:
 
 ```text
+Request HTTP
+    ↓
 Route
-  ↓
+    ↓
 Middleware
-  ↓
+    ↓
 Controller
-  ↓
+    ↓
 Service
-  ↓
+    ↓
 Repository
-  ↓
+    ↓
 PostgreSQL
 ```
 
-- **Routes:** definem os métodos e caminhos da API.
-- **Middlewares:** registram requisições, validam dados e tratam erros.
-- **Controllers:** recebem as requisições e definem as respostas HTTP.
-- **Services:** concentram as regras de negócio.
-- **Repositories:** executam consultas SQL parametrizadas.
-- **Schemas:** definem as regras de validação e normalização com Zod.
-- **Database:** configura e disponibiliza o pool de conexões com o PostgreSQL.
-- **Errors:** define os erros personalizados da aplicação.
+### Routes
+
+Definem os métodos HTTP, caminhos dos endpoints e middlewares executados antes dos controllers.
+
+### Middlewares
+
+Executam responsabilidades compartilhadas entre diferentes rotas, como:
+
+- registro de requisições
+- validação dos dados recebidos
+- tratamento de rotas inexistentes
+- tratamento centralizado de erros
+
+### Controllers
+
+Recebem os dados HTTP já validados, chamam a camada de serviço e constroem a resposta HTTP.
+
+### Services
+
+Concentram as regras de negócio da aplicação.
+
+Exemplos:
+
+- verificar se uma tarefa existe
+- verificar se um projeto existe
+- impedir que uma tarefa já concluída seja concluída novamente
+- impedir que uma tarefa aberta seja reaberta
+- validar a existência de um projeto antes de vinculá-lo a uma tarefa
+- calcular os dados de paginação
+
+### Repositories
+
+São responsáveis pelo acesso ao PostgreSQL.
+
+Executam consultas SQL parametrizadas e transformam os resultados retornados pelo banco em dados utilizados pela aplicação.
+
+### Schemas
+
+Definem os contratos de entrada da API utilizando Zod.
+
+São utilizados para validar e normalizar:
+
+- `request.body`
+- `request.params`
+- `request.query`
+
+### Database
+
+Configura e disponibiliza o pool de conexões com PostgreSQL.
+
+### Errors
+
+Contém os erros personalizados utilizados pelas regras da aplicação.
 
 ## Estrutura do projeto
 
@@ -66,28 +119,46 @@ PostgreSQL
 taskflow-api/
 ├── src/
 │   ├── controllers/
+│   │   ├── projetosController.js
 │   │   └── tarefasController.js
+│   │
 │   ├── database/
 │   │   └── conexao.js
+│   │
 │   ├── errors/
 │   │   └── ErroAplicacao.js
+│   │
 │   ├── middlewares/
 │   │   ├── registrarRequisicao.js
 │   │   ├── rotaNaoEncontrada.js
 │   │   ├── tratarErros.js
 │   │   └── validarRequisicao.js
+│   │
 │   ├── repositories/
+│   │   ├── projetosRepository.js
 │   │   └── tarefasRepository.js
+│   │
 │   ├── routes/
+│   │   ├── projetosRoutes.js
 │   │   └── tarefasRoutes.js
+│   │
 │   ├── schemas/
+│   │   ├── comunsSchemas.js
+│   │   ├── projetosSchemas.js
 │   │   └── tarefasSchemas.js
+│   │
 │   ├── services/
+│   │   ├── projetosService.js
 │   │   └── tarefasService.js
+│   │
 │   ├── app.js
 │   └── server.js
+│
 ├── tests/
+│   ├── comunsSchemas.test.js
+│   ├── projetoSchemas.test.js
 │   └── tarefasSchemas.test.js
+│
 ├── .env.example
 ├── .gitignore
 ├── package.json
@@ -104,45 +175,66 @@ Antes de executar o projeto, é necessário ter instalado:
 - PostgreSQL
 - Git
 
-O pgAdmin é opcional, mas pode ser utilizado para administrar visualmente o banco de dados.
+O pgAdmin é opcional e pode ser utilizado para administrar visualmente o PostgreSQL.
 
 ## Configuração do banco de dados
 
-Crie um banco chamado `taskflow`:
+Crie um banco chamado:
 
 ```sql
 CREATE DATABASE taskflow;
 ```
 
-Conectado ao banco `taskflow`, crie o tipo de prioridade:
+Conectado ao banco `taskflow`, crie o tipo utilizado para representar a prioridade das tarefas:
 
 ```sql
 CREATE TYPE prioridade_tarefa AS ENUM (
-  'baixa',
-  'media',
-  'alta'
+    'baixa',
+    'media',
+    'alta'
 );
 ```
 
-Depois, crie a tabela de tarefas:
+### Tabela de projetos
+
+```sql
+CREATE TABLE IF NOT EXISTS projetos (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    nome VARCHAR NOT NULL
+        CHECK (char_length(trim(nome)) > 0),
+    descricao VARCHAR,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Tabela de tarefas
 
 ```sql
 CREATE TABLE IF NOT EXISTS tarefas (
-  id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  titulo VARCHAR NOT NULL
-    CHECK (char_length(trim(titulo)) > 0),
-  descricao VARCHAR,
-  prioridade prioridade_tarefa NOT NULL,
-  concluida BOOLEAN DEFAULT false,
-  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    titulo VARCHAR NOT NULL
+        CHECK (char_length(trim(titulo)) > 0),
+    descricao VARCHAR,
+    prioridade prioridade_tarefa NOT NULL,
+    concluida BOOLEAN DEFAULT false,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    projeto_id INTEGER
+        REFERENCES projetos(id)
+        ON DELETE SET NULL
 );
 ```
 
-O PostgreSQL será responsável por gerar automaticamente:
+A chave estrangeira:
 
-- `id`
-- `concluida`
-- `criado_em`
+```text
+tarefas.projeto_id → projetos.id
+```
+
+representa o relacionamento entre tarefas e projetos.
+
+O campo `projeto_id` é opcional, portanto uma tarefa pode existir sem estar vinculada a um projeto.
+
+O `ON DELETE SET NULL` garante que, ao excluir um projeto, suas tarefas não sejam excluídas. O vínculo é removido e `projeto_id` passa a ser `NULL`.
 
 ## Como executar
 
@@ -152,7 +244,7 @@ O PostgreSQL será responsável por gerar automaticamente:
 git clone https://github.com/nykthedev/taskflow-api.git
 ```
 
-### 2. Entre na pasta do projeto
+### 2. Entre na pasta
 
 ```bash
 cd taskflow-api
@@ -166,36 +258,29 @@ npm install
 
 ### 4. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na raiz do projeto usando o `.env.example` como referência:
+Crie um arquivo `.env` na raiz do projeto utilizando `.env.example` como referência:
 
 ```env
 PORT=3333
 
 DB_HOST=localhost
 DB_PORT=PORTA_DO_POSTGRESQL
-DB_USER=SEU_USER_DO_POSTGRESQL
+DB_USER=SEU_USUARIO_DO_POSTGRESQL
 DB_PASSWORD=SUA_SENHA_DO_POSTGRESQL
 DB_NAME=taskflow
 ```
 
-O arquivo `.env` contém dados privados e não deve ser enviado ao GitHub.
+O arquivo `.env` contém informações privadas e não deve ser enviado ao repositório.
 
-### 5. Inicie o servidor
+### 5. Inicie a aplicação
 
 ```bash
 npm run dev
 ```
 
-Durante a inicialização, a aplicação testa a comunicação com o PostgreSQL antes de começar a receber requisições HTTP.
+Durante a inicialização, a aplicação verifica a conexão com PostgreSQL antes de iniciar o servidor HTTP.
 
-Resultado esperado:
-
-```text
-PostgreSQL conectado 1
-Servidor rodando em http://localhost:3333
-```
-
-A API ficará disponível em:
+A API ficará disponível localmente em:
 
 ```text
 http://localhost:3333
@@ -203,26 +288,40 @@ http://localhost:3333
 
 ## Testes automatizados
 
-Execute os testes com:
+Os testes utilizam Vitest.
+
+Execute:
 
 ```bash
 npm test
 ```
 
-Os testes atuais verificam os schemas de cadastro e atualização, incluindo:
+A suíte atual possui 22 testes automatizados.
 
-- Rejeição de título vazio
-- Aceitação de dados válidos
-- Normalização da prioridade
-- Rejeição de prioridade inválida
-- Rejeição de atualização com corpo vazio
-- Aceitação de atualização parcial
+Eles verificam contratos importantes como:
+
+- cadastro e atualização de tarefas
+- cadastro e atualização de projetos
+- normalização de prioridade
+- rejeição de valores inválidos
+- atualização parcial
+- rejeição de atualização vazia
+- cadastro de projeto sem dados
+- validação de IDs
+- conversão de parâmetros de string para número
+- rejeição de IDs não numéricos
+- rejeição de IDs não positivos
+- rejeição de IDs decimais
+- limite máximo da paginação
+- valores padrão da paginação
 
 ## Rotas
 
+### Tarefas
+
 | Método | Rota | Descrição |
 |---|---|---|
-| `GET` | `/tarefas` | Lista todas as tarefas |
+| `GET` | `/tarefas` | Lista tarefas com filtros e paginação |
 | `GET` | `/tarefas/:id` | Busca uma tarefa pelo ID |
 | `POST` | `/tarefas` | Cadastra uma nova tarefa |
 | `PATCH` | `/tarefas/:id` | Atualiza parcialmente uma tarefa |
@@ -230,53 +329,72 @@ Os testes atuais verificam os schemas de cadastro e atualização, incluindo:
 | `PATCH` | `/tarefas/:id/reabrir` | Reabre uma tarefa concluída |
 | `DELETE` | `/tarefas/:id` | Exclui uma tarefa |
 
-## Listar tarefas
+### Projetos
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/projetos` | Lista todos os projetos |
+| `GET` | `/projetos/:id` | Busca um projeto pelo ID |
+| `GET` | `/projetos/:id/tarefas` | Lista as tarefas de um projeto |
+| `POST` | `/projetos` | Cadastra um novo projeto |
+| `PATCH` | `/projetos/:id` | Atualiza parcialmente um projeto |
+| `DELETE` | `/projetos/:id` | Exclui um projeto |
+
+## Filtros e paginação
+
+A rota:
 
 ```http
 GET /tarefas
 ```
 
-As tarefas são retornadas da mais recente para a mais antiga.
+aceita os seguintes query params:
 
-### Resposta de sucesso
+| Parâmetro | Valores | Padrão | Descrição |
+|---|---|---|---|
+| `concluida` | `true` ou `false` | — | Filtra pelo estado da tarefa |
+| `prioridade` | `baixa`, `media` ou `alta` | — | Filtra pela prioridade |
+| `pagina` | inteiro positivo | `1` | Define a página |
+| `limite` | inteiro entre `1` e `100` | `10` | Define a quantidade de registros por página |
+
+Os filtros podem ser combinados.
+
+Exemplo:
+
+```http
+GET /tarefas?concluida=false&prioridade=alta&pagina=2&limite=5
+```
+
+### Resposta paginada
 
 ```json
 {
-  "sucesso": true,
-  "mensagem": "Tarefas encontradas com sucesso",
-  "tarefas": [
-    {
-      "id": 1,
-      "titulo": "Estudar Node.js",
-      "descricao": "Praticar desenvolvimento de APIs",
-      "prioridade": "alta",
-      "concluida": false,
-      "criadoEm": "2026-07-28T12:21:06.245Z"
-    }
-  ]
+    "sucesso": true,
+    "mensagem": "Tarefas encontradas com sucesso",
+    "pagina": 1,
+    "limite": 10,
+    "total": 2,
+    "totalPaginas": 1,
+    "tarefas": [
+        {
+            "id": 2,
+            "titulo": "Estudar PostgreSQL",
+            "descricao": "Praticar consultas SQL",
+            "prioridade": "alta",
+            "concluida": false,
+            "criadoEm": "2026-08-08T18:00:00.000Z",
+            "projetoId": 1,
+            "projetoNome": "Backend"
+        }
+    ]
 }
 ```
 
-## Buscar uma tarefa por ID
-
-```http
-GET /tarefas/1
-```
-
-### Resposta de sucesso
+Quando a página solicitada não possui registros, a API retorna uma lista vazia:
 
 ```json
 {
-  "sucesso": true,
-  "mensagem": "Tarefa encontrada com sucesso",
-  "tarefa": {
-    "id": 1,
-    "titulo": "Estudar Node.js",
-    "descricao": "Praticar desenvolvimento de APIs",
-    "prioridade": "alta",
-    "concluida": false,
-    "criadoEm": "2026-07-28T12:21:06.245Z"
-  }
+    "tarefas": []
 }
 ```
 
@@ -290,97 +408,92 @@ POST /tarefas
 
 ```json
 {
-  "titulo": "Estudar PostgreSQL",
-  "descricao": "Praticar consultas SQL",
-  "prioridade": "alta"
+    "titulo": "Estudar PostgreSQL",
+    "descricao": "Praticar consultas SQL",
+    "prioridade": "alta",
+    "projetoId": 1
 }
 ```
 
-A descrição é opcional:
+Campos:
+
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `titulo` | Sim | Título da tarefa |
+| `descricao` | Não | Informações adicionais |
+| `prioridade` | Sim | `baixa`, `media` ou `alta` |
+| `projetoId` | Não | Projeto ao qual a tarefa será vinculada |
+
+Uma tarefa também pode ser criada sem projeto:
 
 ```json
 {
-  "titulo": "Organizar GitHub",
-  "prioridade": "media"
+    "titulo": "Organizar estudos",
+    "prioridade": "media"
 }
 ```
 
-### Resposta de sucesso
-
-```json
-{
-  "sucesso": true,
-  "mensagem": "Tarefa criada com sucesso",
-  "tarefa": {
-    "id": 1,
-    "titulo": "Organizar GitHub",
-    "descricao": null,
-    "prioridade": "media",
-    "concluida": false,
-    "criadoEm": "2026-07-28T12:21:06.245Z"
-  }
-}
-```
+Quando `projetoId` é enviado, a aplicação verifica se o projeto existe antes de criar a tarefa.
 
 ## Atualizar uma tarefa
 
 ```http
-PATCH /tarefas/1
+PATCH /tarefas/:id
 ```
 
-Somente os campos enviados serão atualizados:
+Somente os campos enviados são modificados.
+
+Exemplo:
 
 ```json
 {
-  "titulo": "Estudar Express avançado",
-  "prioridade": "alta"
+    "titulo": "Estudar Express",
+    "prioridade": "alta"
 }
 ```
 
-Também é possível atualizar apenas um campo:
+O projeto também pode ser alterado:
 
 ```json
 {
-  "prioridade": "media"
+    "projetoId": 3
 }
 ```
 
-A consulta de atualização é construída dinamicamente de acordo com os campos enviados.
-
-### Resposta de sucesso
+Para remover o vínculo entre tarefa e projeto:
 
 ```json
 {
-  "sucesso": true,
-  "mensagem": "Tarefa atualizada com sucesso",
-  "tarefa": {
-    "id": 1,
-    "titulo": "Estudar Express avançado",
-    "descricao": null,
-    "prioridade": "alta",
-    "concluida": false,
-    "criadoEm": "2026-07-28T12:21:06.245Z"
-  }
+    "projetoId": null
 }
 ```
+
+No `PATCH`:
+
+```text
+projetoId ausente
+→ mantém o vínculo atual
+
+projetoId com número
+→ vincula a tarefa ao projeto informado
+
+projetoId null
+→ remove o vínculo
+```
+
+Uma atualização com corpo vazio é rejeitada.
 
 ## Concluir uma tarefa
 
 ```http
-PATCH /tarefas/1/concluir
+PATCH /tarefas/:id/concluir
 ```
 
-Não é necessário enviar um corpo na requisição.
+Não é necessário enviar body.
 
-A tarefa passa a ter:
+Uma tarefa já concluída não pode ser concluída novamente.
 
-```json
-{
-  "concluida": true
-}
-```
-
-Tentar concluir uma tarefa que já está concluída retorna:
+Nesse caso a API retorna:
 
 ```text
 409 Conflict
@@ -389,132 +502,198 @@ Tentar concluir uma tarefa que já está concluída retorna:
 ## Reabrir uma tarefa
 
 ```http
-PATCH /tarefas/1/reabrir
+PATCH /tarefas/:id/reabrir
 ```
 
-Não é necessário enviar um corpo na requisição.
+Não é necessário enviar body.
 
-A tarefa passa a ter:
+Uma tarefa que já está aberta não pode ser reaberta.
 
-```json
-{
-  "concluida": false
-}
-```
-
-Tentar reabrir uma tarefa que já está aberta retorna:
+Nesse caso a API retorna:
 
 ```text
 409 Conflict
 ```
 
-## Excluir uma tarefa
+## Cadastrar um projeto
 
 ```http
-DELETE /tarefas/1
+POST /projetos
 ```
 
-### Resposta de sucesso
+### Corpo da requisição
 
 ```json
 {
-  "sucesso": true,
-  "mensagem": "Tarefa deletada com sucesso",
-  "tarefaRemovida": {
-    "id": 1,
-    "titulo": "Estudar Node.js",
-    "descricao": "Praticar desenvolvimento de APIs",
-    "prioridade": "alta",
-    "concluida": false,
-    "criadoEm": "2026-07-28T12:21:06.245Z"
-  }
+    "nome": "Backend",
+    "descricao": "Estudos e projetos relacionados a back-end"
 }
 ```
 
-## Regras de negócio
+Campos:
 
-### Título
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `nome` | Sim | Nome do projeto |
+| `descricao` | Não | Descrição do projeto |
 
-- Obrigatório no cadastro
-- Deve ser uma string
-- Não pode estar vazio
-- Não pode conter somente espaços
-- É normalizado antes de ser salvo
-- Pode ser atualizado parcialmente
+Um cadastro sem `nome` é rejeitado.
 
-A aplicação valida o título com Zod, e o PostgreSQL também protege a coluna com uma constraint `CHECK`.
+## Atualizar um projeto
 
-### Descrição
-
-- Opcional
-- Quando enviada, deve ser uma string
-- Quando não enviada, recebe `null`
-- Pode ser atualizada parcialmente
-
-### Prioridade
-
-Valores permitidos:
-
-```text
-baixa
-media
-alta
+```http
+PATCH /projetos/:id
 ```
 
-A prioridade é normalizada antes do salvamento:
+A atualização é parcial.
 
-```text
-"  ALTA  " → "alta"
-```
-
-O PostgreSQL utiliza o tipo personalizado:
-
-```text
-prioridade_tarefa
-```
-
-### Estado da tarefa
-
-Toda nova tarefa é criada com:
+Exemplo:
 
 ```json
 {
-  "concluida": false
+    "nome": "Backend avançado"
 }
 ```
 
-Uma tarefa aberta pode ser concluída.
+A descrição também pode ser removida:
 
-Uma tarefa concluída pode ser reaberta.
-
-A API impede:
-
-- Concluir uma tarefa que já está concluída
-- Reabrir uma tarefa que já está aberta
-
-### Campos gerados automaticamente
-
-Os seguintes campos são definidos pelo PostgreSQL:
-
-- `id`
-- `concluida`
-- `criadoEm`
-
-No banco de dados, a coluna de criação utiliza o nome:
-
-```text
-criado_em
+```json
+{
+    "descricao": null
+}
 ```
 
-Na resposta da API, ela é retornada como:
+Uma atualização sem nenhum campo é rejeitada.
+
+## Listar tarefas de um projeto
+
+```http
+GET /projetos/:id/tarefas
+```
+
+A API primeiro verifica se o projeto existe.
+
+Se o projeto existir, suas tarefas são retornadas.
+
+Um projeto válido sem tarefas retorna:
+
+```json
+{
+    "tarefas": []
+}
+```
+
+Um projeto inexistente retorna:
 
 ```text
-criadoEm
+404 Not Found
+```
+
+## Relacionamento entre tarefas e projetos
+
+Uma tarefa pode:
+
+```text
+existir sem projeto
+        ↓
+ser vinculada a um projeto
+        ↓
+mudar de projeto
+        ↓
+ter seu vínculo removido
+```
+
+Na leitura das tarefas, a aplicação utiliza `LEFT JOIN` entre `tarefas` e `projetos`.
+
+Isso permite retornar informações do projeto quando existe um vínculo sem impedir que tarefas sem projeto também sejam listadas.
+
+Exemplo de dados retornados:
+
+```json
+{
+    "id": 10,
+    "titulo": "Estudar SQL",
+    "projetoId": 2,
+    "projetoNome": "Backend"
+}
+```
+
+Uma tarefa sem projeto retorna:
+
+```json
+{
+    "projetoId": null,
+    "projetoNome": null
+}
+```
+
+## Validação dos identificadores
+
+Os parâmetros `:id` são validados na fronteira da aplicação utilizando um schema compartilhado.
+
+Um ID precisa:
+
+- representar um número
+- ser inteiro
+- ser positivo
+
+Exemplos:
+
+```text
+/tarefas/abc
+→ 400 Bad Request
+
+/tarefas/0
+→ 400 Bad Request
+
+/tarefas/1.5
+→ 400 Bad Request
+```
+
+Um ID estruturalmente válido pode passar pela validação e ainda representar um recurso inexistente:
+
+```text
+/tarefas/999
+→ 404 Not Found
+```
+
+A separação de responsabilidades é:
+
+```text
+Schema / middleware
+→ valida o formato da entrada
+
+Service
+→ verifica existência e regras de negócio
+```
+
+## Validação de dados
+
+A API utiliza Zod para validar e normalizar entradas antes que elas cheguem às regras de negócio.
+
+O middleware de validação pode trabalhar com diferentes origens:
+
+```text
+body
+params
+query
+```
+
+Dados validados vindos de `params` e `query` são disponibilizados para a aplicação já transformados e confiáveis.
+
+Por exemplo:
+
+```text
+"8"
+↓
+z.coerce.number()
+↓
+8
 ```
 
 ## Consultas parametrizadas
 
-Os dados enviados pelo cliente não são concatenados diretamente no SQL.
+Valores fornecidos pelo cliente não são concatenados diretamente às consultas SQL.
 
 Exemplo:
 
@@ -530,11 +709,11 @@ Os valores são enviados separadamente:
 [id]
 ```
 
-Isso faz com que o PostgreSQL trate o conteúdo recebido como dado, ajudando a impedir ataques de SQL Injection.
+Isso faz com que o PostgreSQL trate o conteúdo recebido como dado, reduzindo o risco de SQL Injection.
 
 ## Tratamento de erros
 
-A aplicação possui um middleware centralizado de erros.
+A aplicação utiliza tratamento centralizado de erros.
 
 Erros conhecidos são representados pela classe:
 
@@ -542,55 +721,71 @@ Erros conhecidos são representados pela classe:
 ErroAplicacao
 ```
 
-Erros inesperados são registrados no terminal, enquanto o cliente recebe uma resposta genérica e segura:
+Formato geral de erro:
 
 ```json
 {
-  "sucesso": false,
-  "tipoErro": "ERRO_INTERNO",
-  "mensagem": "Erro interno no servidor"
+    "sucesso": false,
+    "tipoErro": "DADOS_INVALIDOS",
+    "mensagem": "Os dados enviados são inválidos",
+    "detalhes": []
 }
 ```
 
+Erros inesperados são tratados pelo middleware central e não expõem detalhes internos da aplicação ao cliente.
+
 ## Status HTTP
 
-| Status | Descrição |
+| Status | Significado |
 |---|---|
 | `200 OK` | Operação realizada com sucesso |
-| `201 Created` | Tarefa criada com sucesso |
-| `400 Bad Request` | Dados ou identificador inválidos |
-| `404 Not Found` | Tarefa não encontrada |
-| `409 Conflict` | A operação entra em conflito com o estado atual da tarefa |
+| `201 Created` | Recurso criado com sucesso |
+| `400 Bad Request` | Dados ou identificadores inválidos |
+| `404 Not Found` | Tarefa, projeto ou rota não encontrada |
+| `409 Conflict` | Operação incompatível com o estado atual do recurso |
 | `500 Internal Server Error` | Erro inesperado na aplicação |
 
-## Próximas melhorias
+## Decisões técnicas
 
-- Filtros por prioridade e status
-- Busca de tarefas pelo título
-- Paginação com `LIMIT` e `OFFSET`
-- Contagem total de tarefas
-- Testes de integração das rotas
-- Migrações do banco de dados
-- Autenticação e autorização
-- Documentação com Swagger
-- Docker
-- Deploy da aplicação
+Algumas decisões adotadas no projeto:
+
+- arquitetura separada em routes, controllers, services e repositories
+- validação dos dados na fronteira da aplicação
+- regras de negócio concentradas nos services
+- acesso ao banco concentrado nos repositories
+- consultas SQL parametrizadas
+- schemas reutilizáveis para contratos compartilhados
+- relacionamento opcional entre tarefas e projetos
+- `ON DELETE SET NULL` para preservar tarefas
+- `LEFT JOIN` para manter tarefas sem projeto nas consultas
+- paginação utilizando `LIMIT` e `OFFSET`
+- limite máximo de 100 registros por página
+- tratamento centralizado de erros
+- testes automatizados dos principais contratos de validação
+
+## Deploy
+
+O deploy da API e do banco de dados será realizado na próxima etapa do projeto.
+
+Após a publicação, esta seção será atualizada com a URL pública da API e as informações necessárias para utilizá-la em ambiente de produção.
 
 ## Status do projeto
 
-✅ CRUD completo integrado ao PostgreSQL.
+A versão atual possui:
 
-✅ Validação profissional com Zod.
+- CRUD de tarefas
+- CRUD de projetos
+- relacionamento entre tarefas e projetos
+- regras de negócio
+- validação profissional com Zod
+- filtros
+- paginação
+- PostgreSQL
+- consultas parametrizadas
+- tratamento centralizado de erros
+- testes automatizados
 
-✅ Consultas SQL parametrizadas.
-
-✅ Arquitetura em camadas.
-
-✅ Tratamento centralizado de erros.
-
-✅ Testes automatizados dos schemas.
-
-O projeto continuará sendo evoluído com novos recursos, segurança, testes e melhorias na arquitetura.
+A próxima etapa é a publicação da aplicação em ambiente de produção.
 
 ## Autor
 
