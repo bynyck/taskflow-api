@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { tarefasRouter } from "./routes/tarefasRoutes.js";
 import { projetosRouter } from "./routes/projetosRoutes.js";
 import { registrarRequisicao } from "./middlewares/registrarRequisicao.js";
@@ -6,6 +7,8 @@ import { rotaNaoEncontrada } from "./middlewares/rotaNaoEncontrada.js";
 import { tratarErros } from "./middlewares/tratarErros.js";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
